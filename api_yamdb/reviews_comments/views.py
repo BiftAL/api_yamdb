@@ -2,8 +2,9 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework import viewsets
 
-from .models import Review, Comment
 from .serializers import ReviewSerializer, CommentSerializer
+from .models import Review, Comment
+from titles.models import Title
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -13,12 +14,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
 
     def get_queryset(self):
-        title_id = get_object_or_404(Review, pk=self.kwargs.get('title_id'))
+        title_id = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
         review_queryset = Review.objects.filter(title_id=title_id)
         return review_queryset
 
     def perform_create(self, serializer):
-        title_id = get_object_or_404(Review, pk=self.kwargs.get('title_id'))
+        title_id = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
         serializer.save(author=self.request.user, title_id=title_id)
 
 

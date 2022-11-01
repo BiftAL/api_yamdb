@@ -17,7 +17,6 @@ class ReviewSerializer(serializers.ModelSerializer):
     )
 
     # title_id = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
-
     class Meta:
         fields = ('id', 'title_id', 'text', 'author', 'score', 'pub_date')
         read_only_fields = ('id',)

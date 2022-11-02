@@ -1,10 +1,6 @@
-from django.shortcuts import get_object_or_404
-
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
 
 from .models import Review, Comment
-from titles.models import Title
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -16,18 +12,20 @@ class ReviewSerializer(serializers.ModelSerializer):
         default=serializers.CurrentUserDefault()
     )
 
-    # title_id = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+    def create(self, data):
+        """Проверка на уникальность обзора к произведению."""
+        author = self.context['request'].user
+        title_id = self.context['view'].kwargs['title_id']
+        if Review.objects.filter(author=author, title_id=title_id):
+            raise serializers.ValidationError(
+                'Вы уже оставляли отзыв на это произведение!'
+            )
+        return data
+
     class Meta:
-        fields = ('id', 'title_id', 'text', 'author', 'score', 'pub_date')
+        fields = ('id', 'text', 'author', 'score', 'pub_date')
         read_only_fields = ('id',)
         model = Review
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Review.objects.all(),
-                fields=('author', 'title_id'),
-                message='Вы уже оставляли отзыв на это произведение!'
-            )
-        ]
 
 
 class CommentSerializer(serializers.ModelSerializer):

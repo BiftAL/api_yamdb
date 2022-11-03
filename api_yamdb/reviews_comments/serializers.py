@@ -14,13 +14,14 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     def create(self, data):
         """Проверка на уникальность обзора к произведению."""
-        author = self.context['request'].user
-        title_id = self.context['view'].kwargs['title_id']
-        if Review.objects.filter(author=author, title_id=title_id):
+        if Review.objects.filter(
+                author=data.get('author'),
+                title_id=data.get('title_id')
+        ):
             raise serializers.ValidationError(
                 'Вы уже оставляли отзыв на это произведение!'
             )
-        return data
+        return Review.objects.create(**data)
 
     class Meta:
         fields = ('id', 'text', 'author', 'score', 'pub_date')

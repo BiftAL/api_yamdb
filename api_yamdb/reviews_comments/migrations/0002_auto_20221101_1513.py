@@ -9,6 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('reviews_comments', '0001_initial'),
+        ('titles', '__latest__'),
     ]
 
     operations = [

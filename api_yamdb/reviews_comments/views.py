@@ -13,10 +13,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthorOrHiAccessOrReadOnly]
-    # permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
 
     def get_queryset(self):
-        print(self.request.user.role)
         title_id = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
         review_queryset = Review.objects.filter(title_id=title_id)
         return review_queryset

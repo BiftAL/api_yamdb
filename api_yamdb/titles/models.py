@@ -18,6 +18,10 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+
 
 class Genre(models.Model):
     """модель жанра произведения"""
@@ -36,6 +40,10 @@ class Genre(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
+
 
 class Title(models.Model):
     """модель произведения"""
@@ -45,7 +53,7 @@ class Title(models.Model):
         verbose_name='Название',
         help_text='Название произведения'
     )
-    year = models.IntegerField(
+    year = models.PositiveSmallIntegerField(
         verbose_name='Год выпуска',
         help_text='Год выпуска произведения'
     )
@@ -54,9 +62,10 @@ class Title(models.Model):
         verbose_name='Описание',
         help_text='Описание произведения'
     )
-    genre = models.ManyToManyField(
+    genres = models.ManyToManyField(
         Genre,
-        through='GenreTitle'
+        through='GenreTitle',
+        related_name='titles'
     )
     category = models.ForeignKey(
         Category,
@@ -70,8 +79,12 @@ class Title(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
+
 
 class GenreTitle(models.Model):
     """связующая жанры с произведениями модель"""
-    title = models.ForeignKey(Title, on_delete=models.SET_NULL, null=True)
-    genre = models.ForeignKey(Genre, on_delete=models.SET_NULL, null=True)
+    title = models.ForeignKey(Title, on_delete=models.CASCADE, null=True)
+    genre = models.ForeignKey(Genre, on_delete=models.CASCADE, null=True)

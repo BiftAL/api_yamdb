@@ -23,5 +23,5 @@ class User(AbstractUser):
     )
     confirmation_code = models.IntegerField(
         'Код подтверждения',
-        blank=True,
+        null=True,
     )

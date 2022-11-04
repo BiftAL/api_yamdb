@@ -21,3 +21,9 @@ class GenreViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    """вьюсет произведений"""
+    queryset = models.Title.objects.all()
+    serializer_class = serializers.TitleSerializer

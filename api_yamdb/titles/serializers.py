@@ -17,3 +17,17 @@ class GenreSerializer(serializers.ModelSerializer):
         fields = ('name', 'slug')
         model = models.Genre
         lookup_field = 'slug'
+
+
+class TitleSerializer(serializers.ModelSerializer):
+    """сериализатор произведений"""
+    rating = serializers.SerializerMethodField()
+
+    class Meta:
+        fields = (
+            'id', 'name', 'year', 'rating', 'description', 'genres', 'category'
+        )
+        model = models.Title
+
+    def get_rating(self, obj):
+        return "в работе"

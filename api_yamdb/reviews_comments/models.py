@@ -1,16 +1,17 @@
 from django.db import models
 
-# from users.models import User
+from users.models import User
+from titles.models import Title
 
 
 class Review(models.Model):
     """Здесь хранятся отзывы к произведениям."""
 
-    title_id = models.TextField('ID произведения',)
+    title_id = models.ForeignKey(
+        Title, on_delete=models.CASCADE, related_name='reviews')
     text = models.TextField('Текст отзыва', )
-    author = models.TextField('Автор обзора',)
-    # author = models.ForeignKey(
-    #    User, on_delete=models.CASCADE, related_name='reviews')
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='reviews')
     score = models.DecimalField(max_digits=2, decimal_places=0)
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
 
@@ -28,9 +29,9 @@ class Comment(models.Model):
     review_id = models.ForeignKey(
         Review, on_delete=models.CASCADE, related_name='comments')
     text = models.TextField('Текст комментария',)
-    author = models.TextField('Автор комментария', )
-    # author = models.ForeignKey(
-    #    User, on_delete=models.CASCADE, related_name='comments')
+    # author = models.TextField('Автор комментария', )
+    author = models.ForeignKey(
+       User, on_delete=models.CASCADE, related_name='comments')
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
 
     def __str__(self):

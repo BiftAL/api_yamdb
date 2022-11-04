@@ -11,3 +11,13 @@ class CategoryViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
+
+
+class GenreViewSet(viewsets.ModelViewSet):
+    """вьюсет жанров"""
+    queryset = models.Genre.objects.all()
+    serializer_class = serializers.GenreSerializer
+    pagination_class = pagination.LimitOffsetPagination
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
+    lookup_field = 'slug'

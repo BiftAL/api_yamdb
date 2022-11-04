@@ -33,7 +33,8 @@ class Genre(models.Model):
         help_text='Название жанра'
     )
     slug = models.SlugField(
-        unique=False,
+        max_length=50,
+        unique=True,
         verbose_name='Slug',
         help_text='Адрес жанра в адресной строке'
     )

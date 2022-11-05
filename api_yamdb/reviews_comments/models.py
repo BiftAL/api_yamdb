@@ -33,7 +33,7 @@ class Comment(models.Model):
         Review, on_delete=models.CASCADE, related_name='comments')
     text = models.TextField('Текст комментария',)
     author = models.ForeignKey(
-       User, on_delete=models.CASCADE, related_name='comments')
+        User, on_delete=models.CASCADE, related_name='comments')
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
 
     def __str__(self):

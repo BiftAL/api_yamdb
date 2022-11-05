@@ -7,6 +7,7 @@ router = routers.DefaultRouter()
 router.register(r'signup', UserViewSet, basename='signup')
 
 urlpatterns = [
+    # path('v1/titles/', include('reviews_comments.urls')),
     path('v1/auth/', include(router.urls)),
     re_path(
         r'^v1/titles/(?P<title_id>[\d]+)/reviews/',

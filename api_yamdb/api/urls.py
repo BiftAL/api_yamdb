@@ -1,21 +1,16 @@
 from django.urls import include, path, re_path
-from rest_framework_simplejwt.views import TokenObtainPairView
-from .views import UserViewSet
+from .views import CreateUserView, GetAPIToken
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-router.register(r'signup', UserViewSet, basename='signup')
 
 urlpatterns = [
-    path('v1/auth/', include(router.urls)),
-    re_path(
+    path('v1/', include('titles.urls'))
+    path('v1/auth/signup/', CreateUserView.as_view(), name='signup'),
+    path('v1/auth/token/', GetAPIToken.as_view(), name='token'),
+     re_path(
         r'^v1/titles/(?P<title_id>[\d]+)/reviews/',
         include('reviews_comments.urls')
     ),
-    path(
-        'v1/auth/token/',
-        TokenObtainPairView.as_view(),
-        name='token_obtain_pair'
-    ),
-    path('v1/', include('titles.urls'))
+    path('v1/users/', include(router.urls)),
 ]

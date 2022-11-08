@@ -1,13 +1,38 @@
 import random
 
 from django.core.mail import send_mail
-from rest_framework import status
+from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import AccessToken
 
 from users.models import User
-from .serializers import TokenSerializer, UserSerializer
+from .serializers import TokenSerializer, UserFieldsSerializer, UserSerializer
+
+
+class UsersView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        users = User.objects.get()
+        serializer = UserFieldsSerializer(users)
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response(
+                {'email': user.email, 'username': user.username},
+                status=status.HTTP_201_CREATED
+            )
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 class CreateUserView(APIView):
@@ -15,7 +40,9 @@ class CreateUserView(APIView):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             code = random.randint(1000, 9999)
-            user = serializer.save(confirmation_code=code)
+            user = serializer.save(
+                confirmation_code=code,
+            )
             send_mail(
                 'YAMDB API confirmation code',
                 str(code),
@@ -31,6 +58,33 @@ class CreateUserView(APIView):
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
+
+
+class GetUserInfoView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = User.objects.get(id=request.user.pk)
+        serializer = UserFieldsSerializer(user)
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )
+
+    def patch(self, request):
+        user = User.objects.get(id=request.user.pk)
+        serializer = UserFieldsSerializer(
+            user,
+            data=request.data,
+            partial=True
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                serializer.validated_data,
+                status=status.HTTP_204_NO_CONTENT
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetAPIToken(APIView):

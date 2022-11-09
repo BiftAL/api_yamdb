@@ -9,24 +9,48 @@ from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework.pagination import PageNumberPagination
 
 from users.models import User
+from .permissions import IsAuthenticatedAdmin
 from .serializers import (TokenSerializer, UserFieldsSerializer,
                           UserSignUpSerializer, UserAdminCreateSerializer)
 
 
 class UserRUDView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticatedAdmin]
 
     def get(self, request, username):
         user = get_object_or_404(User, username=username)
+        serializer = UserFieldsSerializer(user)
         return Response(
-            user,
+            serializer.data,
             status=status.HTTP_200_OK
         )
+
+    def patch(self, request, username):
+        user = get_object_or_404(User, username=username)
+        serializer = UserFieldsSerializer(
+            user,
+            data=request.data,
+            partial=True
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                serializer.validated_data,
+                status=status.HTTP_200_OK
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, username):
+        user = get_object_or_404(User, username=username)
+        if user:
+            user.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class UsersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (IsAuthenticatedAdmin,)
     serializer_class = UserAdminCreateSerializer
     pagination_class = PageNumberPagination
 
@@ -85,7 +109,7 @@ class GetUserInfoView(APIView):
             serializer.save()
             return Response(
                 serializer.validated_data,
-                status=status.HTTP_204_NO_CONTENT
+                status=status.HTTP_200_OK
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

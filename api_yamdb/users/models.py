@@ -23,3 +23,6 @@ class User(AbstractUser):
         'Код подтверждения',
         null=True,
     )
+
+    class Meta:
+        ordering = ['-id']

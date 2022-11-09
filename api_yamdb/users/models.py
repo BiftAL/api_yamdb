@@ -2,11 +2,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 ROLE_CHOICES = (
-    ('anon', 'Аноним '),
     ('user', 'Аутентифицированный'),
     ('moderator', 'Модератор'),
     ('admin', 'Администратор'),
-    ('superuser', 'Суперюзер'),
 )
 
 

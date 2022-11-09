@@ -56,10 +56,9 @@ class UsersViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         if self.request.data.get('role') is None:
-            self.request.POST._mutable = True
-            self.request.data['role'] = "user"
-            self.request.POST._mutable = False
-        serializer.save(role=self.request.data['role'])
+            serializer.save(role="user")
+        else:
+            serializer.save()
 
 
 class CreateUserView(APIView):
@@ -100,6 +99,10 @@ class GetUserInfoView(APIView):
 
     def patch(self, request):
         user = User.objects.get(id=request.user.pk)
+        if request.user.role != 'admin':
+            self.request.POST._mutable = True
+            self.request.data['role'] = request.user.role
+            self.request.POST._mutable = False
         serializer = UserFieldsSerializer(
             user,
             data=request.data,

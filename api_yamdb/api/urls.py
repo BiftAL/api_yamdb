@@ -13,6 +13,6 @@ urlpatterns = [
     path('v1/users/me/', GetUserInfoView.as_view(), name='me'),
     re_path(
         r'^v1/titles/(?P<title_id>[\d]+)/reviews/',
-        include('reviews_comments.urls')
+        include('reviews.urls')
     ),
 ]

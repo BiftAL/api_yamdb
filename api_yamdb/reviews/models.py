@@ -8,7 +8,7 @@ from titles.models import Title
 class Review(models.Model):
     """Здесь хранятся отзывы к произведениям."""
 
-    title_id = models.ForeignKey(
+    title = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name='reviews')
     text = models.TextField('Текст отзыва', )
     author = models.ForeignKey(
@@ -24,6 +24,7 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
+        unique_together = ('author', 'title',)
 
 
 class Comment(models.Model):

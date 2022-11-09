@@ -6,7 +6,7 @@ from django.conf import settings
 
 from users.models import User
 from titles.models import Title, Genre, Category, GenreTitle
-from reviews_comments.models import Review, Comment
+from reviews.models import Review, Comment
 
 models = {
     User: 'static/data/users.csv',
@@ -49,7 +49,7 @@ class Command(BaseCommand):
                         author = User.objects.get(id=row['author'])
                         model_ = model(
                             id=row['id'],
-                            title_id=title_id,
+                            title=title_id,
                             text=row['text'],
                             author=author,
                             score=row['score'],

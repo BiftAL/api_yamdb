@@ -16,7 +16,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         """Проверка на уникальность обзора к произведению."""
         if Review.objects.filter(
                 author=data.get('author'),
-                title_id=data.get('title_id')
+                title=data.get('title')
         ):
             raise serializers.ValidationError(
                 'Вы уже оставляли отзыв на это произведение!'

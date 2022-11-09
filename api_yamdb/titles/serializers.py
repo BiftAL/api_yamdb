@@ -22,6 +22,9 @@ class GenreSerializer(serializers.ModelSerializer):
 class TitleSerializer(serializers.ModelSerializer):
     """сериализатор произведений"""
     rating = serializers.SerializerMethodField()
+    category = serializers.StringRelatedField()
+        # CategorySerializer()
+    genres = GenreSerializer(many=True, read_only=True)
 
     class Meta:
         fields = (
@@ -29,12 +32,24 @@ class TitleSerializer(serializers.ModelSerializer):
         )
         model = models.Title
 
+    #def create(self, validated_data):
+        # genres = validated_data.pop('genres')
+        #category = validated_data.pop('category')
+        #title = models.Title.objects.create(**validated_data)
+        # for genre in genres:
+            #print(genre)
+            #current_genre, status = models.Genre.objects.get(**genre)
+
     def get_rating(self, obj):
         sum_of_scores = 0
         count_of_scores = 0
+        count = None
 
         for i in obj.reviews.filter(title_id=obj.pk):
             sum_of_scores += i.score
             count_of_scores += 1
 
-        return int(sum_of_scores / count_of_scores)
+        if count_of_scores > 0:
+            count = int(sum_of_scores / count_of_scores)
+
+        return count

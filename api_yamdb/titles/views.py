@@ -1,9 +1,10 @@
-from rest_framework import filters, pagination, viewsets, mixins
-import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
+
+from rest_framework import filters, pagination, viewsets, mixins
+
 from . import models, serializers
-from .models import Title
 from .permissions import IsAdminOrReadOnly
+from .filters import TitleFilter
 
 
 class CategoryViewSet(mixins.CreateModelMixin,
@@ -38,29 +39,6 @@ class GenreViewSet(mixins.CreateModelMixin,
     lookup_field = 'slug'
 
 
-class TitleFilter(django_filters.FilterSet):
-    category = django_filters.CharFilter(
-        field_name='category__slug',
-        lookup_expr='iexact'
-    )
-    genre = django_filters.CharFilter(
-        field_name='genre__slug',
-        lookup_expr='iexact'
-    )
-    name = django_filters.CharFilter(
-        field_name='name',
-        lookup_expr='icontains'
-    )
-    year = django_filters.CharFilter(
-        field_name='year',
-        lookup_expr='iexact'
-    )
-
-    class Meta:
-        model = Title
-        fields = '__all__'
-
-
 class TitleViewSet(viewsets.ModelViewSet):
     """Вьюсет произведений."""
 
@@ -69,4 +47,4 @@ class TitleViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('category__slug', 'genre__slug', 'name', 'year')
-    filter_class = (TitleFilter)
+    filterset_class = TitleFilter

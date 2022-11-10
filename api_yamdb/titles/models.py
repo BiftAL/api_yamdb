@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Category(models.Model):
-    """модель категории произведения"""
+    """Модель категории произведения."""
 
     name = models.CharField(
         max_length=256,
@@ -25,7 +25,7 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    """модель жанра произведения"""
+    """Модель жанра произведения."""
 
     name = models.CharField(
         max_length=256,
@@ -48,7 +48,7 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    """модель произведения"""
+    """Модель произведения."""
 
     name = models.CharField(
         max_length=100,
@@ -59,7 +59,6 @@ class Title(models.Model):
         verbose_name='Год выпуска',
         help_text='Год выпуска произведения'
     )
-    # rating = integer (Рейтинг на основе отзывов, если отзывов нет — `None`)
     description = models.TextField(
         verbose_name='Описание',
         help_text='Описание произведения'
@@ -88,6 +87,6 @@ class Title(models.Model):
 
 
 class GenreTitle(models.Model):
-    """связующая жанры с произведениями модель"""
+    """Связующая жанры с произведениями модель."""
     title = models.ForeignKey(Title, on_delete=models.CASCADE, null=True)
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE, null=True)

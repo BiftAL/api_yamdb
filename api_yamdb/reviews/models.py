@@ -1,5 +1,5 @@
-from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 
 from users.models import User
 from titles.models import Title
@@ -25,6 +25,7 @@ class Review(models.Model):
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
         unique_together = ('author', 'title',)
+        ordering = ['-id']
 
 
 class Comment(models.Model):
@@ -43,3 +44,4 @@ class Comment(models.Model):
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
+        ordering = ['-id']

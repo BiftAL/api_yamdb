@@ -1,8 +1,8 @@
 import os
 import csv
 
-from django.core.management.base import BaseCommand
 from django.conf import settings
+from django.core.management.base import BaseCommand
 
 from users.models import User
 from titles.models import Title, Genre, Category, GenreTitle

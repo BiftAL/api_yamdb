@@ -4,7 +4,7 @@ from . import models
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    """сериализатор категорий"""
+    """Сериализатор категорий."""
     class Meta:
         fields = ('name', 'slug')
         model = models.Category
@@ -12,7 +12,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class GenreSerializer(serializers.ModelSerializer):
-    """сериализатор жанров"""
+    """Сериализатор жанров."""
     class Meta:
         fields = ('name', 'slug')
         model = models.Genre
@@ -20,25 +20,30 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    """сериализатор произведений"""
+    """Сериализатор произведений."""
     rating = serializers.SerializerMethodField()
-    category = serializers.StringRelatedField()
-        # CategorySerializer()
-    genres = GenreSerializer(many=True, read_only=True)
+    category = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=models.Category.objects
+    )
+    genre = serializers.SlugRelatedField(
+        many=True, slug_field='slug',
+        queryset=models.Genre.objects
+    )
 
     class Meta:
         fields = (
-            'id', 'name', 'year', 'rating', 'description', 'genres', 'category'
+            'id', 'name', 'year', 'rating',
+            'description', 'genre', 'category'
         )
         model = models.Title
 
-    #def create(self, validated_data):
-        # genres = validated_data.pop('genres')
-        #category = validated_data.pop('category')
-        #title = models.Title.objects.create(**validated_data)
-        # for genre in genres:
-            #print(genre)
-            #current_genre, status = models.Genre.objects.get(**genre)
+    def create(self, validated_data):
+        genres = validated_data.pop('genre')
+        title = models.Title.objects.create(**validated_data)
+        for genre in genres:
+            models.GenreTitle.objects.create(genre=genre, title=title)
+        return title
 
     def get_rating(self, obj):
         sum_of_scores = 0
@@ -53,3 +58,24 @@ class TitleSerializer(serializers.ModelSerializer):
             count = int(sum_of_scores / count_of_scores)
 
         return count
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        category_name = models.Category.objects.get(
+            slug=representation["category"]).name
+        representation["category"] = {
+            'name': category_name,
+            'slug': representation["category"]
+        }
+
+        genre_list = []
+        for genre in representation["genre"]:
+            genre_name = models.Genre.objects.get(slug=genre).name
+            genre_list.append(
+                {
+                    'name': genre_name,
+                    'slug': genre
+                }
+            )
+        representation["genre"] = genre_list
+        return representation

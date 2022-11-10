@@ -15,6 +15,4 @@ class IsAuthorOrHiAccessOrReadOnly(permissions.BasePermission):
         return (request.method in permissions.SAFE_METHODS
                 or obj.author == request.user
                 or request.user.role in self.access_roles
-                or request.user.is_superuser
-                )
-
+                or request.user.is_superuser)

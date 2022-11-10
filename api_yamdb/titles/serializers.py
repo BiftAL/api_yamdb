@@ -4,7 +4,7 @@ from . import models
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    """сериализатор категорий"""
+    """Сериализатор категорий."""
     class Meta:
         fields = ('name', 'slug')
         model = models.Category
@@ -12,7 +12,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class GenreSerializer(serializers.ModelSerializer):
-    """сериализатор жанров"""
+    """Сериализатор жанров."""
     class Meta:
         fields = ('name', 'slug')
         model = models.Genre
@@ -20,7 +20,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    """сериализатор произведений"""
+    """Сериализатор произведений."""
     rating = serializers.SerializerMethodField()
     category = serializers.SlugRelatedField(slug_field='slug', queryset=models.Category.objects)
     genre = serializers.SlugRelatedField(many=True, slug_field='slug', queryset=models.Genre.objects)
@@ -37,13 +37,6 @@ class TitleSerializer(serializers.ModelSerializer):
         for genre in genres:
             models.GenreTitle.objects.create(genre=genre, title=title)
         return title
-
-        #def to_representation(self, instance):
-
-    def to_representation(self, instance):
-        # print(self.data)
-        data = TitleSerializer.to_representation(instance)
-        return data
 
     def get_rating(self, obj):
         sum_of_scores = 0

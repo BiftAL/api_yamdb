@@ -16,4 +16,3 @@ class IsAuthorOrHiAccessOrReadOnly(permissions.BasePermission):
                 or obj.author == request.user
                 or request.user.role in self.access_roles
                 or request.user.is_superuser)
-

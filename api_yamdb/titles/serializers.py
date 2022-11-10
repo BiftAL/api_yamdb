@@ -51,3 +51,25 @@ class TitleSerializer(serializers.ModelSerializer):
             count = int(sum_of_scores / count_of_scores)
 
         return count
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        print(representation["genre"])
+        category_name = models.Category.objects.get(
+            slug=representation["category"]).name
+        representation["category"] = {
+            'name': category_name,
+            'slug': representation["category"]
+        }
+
+        genre_list = []
+        for genre in representation["genre"]:
+            genre_name = models.Genre.objects.get(slug=genre).name
+            genre_list.append(
+                {
+                    'name': genre_name,
+                    'slug': genre
+                }
+            )
+        representation["genre"] = genre_list
+        return representation

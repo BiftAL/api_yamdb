@@ -16,6 +16,7 @@ class CategoryViewSet(mixins.CreateModelMixin,
     pagination_class = pagination.LimitOffsetPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    filterset_fields = ('slug',)
     lookup_field = 'slug'
 
 
@@ -31,6 +32,7 @@ class GenreViewSet(mixins.CreateModelMixin,
     pagination_class = pagination.LimitOffsetPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    filterset_fields = ('slug',)
     lookup_field = 'slug'
 
 
@@ -40,5 +42,5 @@ class TitleViewSet(viewsets.ModelViewSet):
     queryset = models.Title.objects.all()
     serializer_class = serializers.TitleSerializer
     permission_classes = [IsAdminOrReadOnly]
-
-
+    filter_backends = (filters.SearchFilter,)
+    filterset_fields = ('category', 'genre', 'name', 'year')

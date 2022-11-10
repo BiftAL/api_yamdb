@@ -22,12 +22,19 @@ class GenreSerializer(serializers.ModelSerializer):
 class TitleSerializer(serializers.ModelSerializer):
     """Сериализатор произведений."""
     rating = serializers.SerializerMethodField()
-    category = serializers.SlugRelatedField(slug_field='slug', queryset=models.Category.objects)
-    genre = serializers.SlugRelatedField(many=True, slug_field='slug', queryset=models.Genre.objects)
+    category = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=models.Category.objects
+    )
+    genre = serializers.SlugRelatedField(
+        many=True, slug_field='slug',
+        queryset=models.Genre.objects
+    )
 
     class Meta:
         fields = (
-            'id', 'name', 'year', 'rating', 'description', 'genre', 'category'
+            'id', 'name', 'year', 'rating',
+            'description', 'genre', 'category'
         )
         model = models.Title
 
@@ -51,3 +58,24 @@ class TitleSerializer(serializers.ModelSerializer):
             count = int(sum_of_scores / count_of_scores)
 
         return count
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        category_name = models.Category.objects.get(
+            slug=representation["category"]).name
+        representation["category"] = {
+            'name': category_name,
+            'slug': representation["category"]
+        }
+
+        genre_list = []
+        for genre in representation["genre"]:
+            genre_name = models.Genre.objects.get(slug=genre).name
+            genre_list.append(
+                {
+                    'name': genre_name,
+                    'slug': genre
+                }
+            )
+        representation["genre"] = genre_list
+        return representation

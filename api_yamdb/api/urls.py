@@ -19,7 +19,6 @@ urlpatterns = [
         name='user'
     ),
     path('v1/', include(router.urls)),
-    # path(r'v1/users/', UsersView.as_view(), name='users'),
     re_path(
         r'^v1/titles/(?P<title_id>[\d]+)/reviews/',
         include('reviews.urls')

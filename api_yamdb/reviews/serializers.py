@@ -12,16 +12,16 @@ class ReviewSerializer(serializers.ModelSerializer):
         default=serializers.CurrentUserDefault()
     )
 
-    def create(self, data):
+    def create(self, validate_data):
         """Проверка на уникальность обзора к произведению."""
         if Review.objects.filter(
-                author=data.get('author'),
-                title=data.get('title')
+                author=validate_data.get('author'),
+                title=validate_data.get('title')
         ):
             raise serializers.ValidationError(
                 'Вы уже оставляли отзыв на это произведение!'
             )
-        return Review.objects.create(**data)
+        return Review.objects.create(**validate_data)
 
     class Meta:
         fields = ('id', 'text', 'author', 'score', 'pub_date')

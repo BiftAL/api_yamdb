@@ -22,35 +22,28 @@ class GenreSerializer(serializers.ModelSerializer):
 class TitleSerializer(serializers.ModelSerializer):
     """сериализатор произведений"""
     rating = serializers.SerializerMethodField()
-    category = CategorySerializer(read_only=True)
-    genres = GenreSerializer(many=True, read_only=True)
+    category = serializers.SlugRelatedField(slug_field='slug', queryset=models.Category.objects)
+    genre = serializers.SlugRelatedField(many=True, slug_field='slug', queryset=models.Genre.objects)
 
     class Meta:
         fields = (
-            'id', 'name', 'year', 'rating', 'description', 'genres', 'category'
+            'id', 'name', 'year', 'rating', 'description', 'genre', 'category'
         )
         model = models.Title
 
-    #def create(self, data):
-    #    """Проверка на уникальность обзора к произведению."""
-    #    if Review.objects.filter(
-    #            author=data.get('author'),
-    #            title=data.get('title')
-    #    ):
-    #        raise serializers.ValidationError(
-    #            'Вы уже оставляли отзыв на это произведение!'
-    #        )
-    #    return Review.objects.create(**data)
+    def create(self, validated_data):
+        genres = validated_data.pop('genre')
+        title = models.Title.objects.create(**validated_data)
+        for genre in genres:
+            models.GenreTitle.objects.create(genre=genre, title=title)
+        return title
 
-    def create(self, data):
-        #genres = validated_data.pop('genres')
-        #category = validated_data.pop('category')
-        print(data)
-        #title = models.Title.objects.create(**validated_data)
-        # for genre in genres:
-            #print(genre)
-            #current_genre, status = models.Genre.objects.get(**genre)
-        return models.Title.objects.create(**data)
+        #def to_representation(self, instance):
+
+    def to_representation(self, instance):
+        # print(self.data)
+        data = TitleSerializer.to_representation(instance)
+        return data
 
     def get_rating(self, obj):
         sum_of_scores = 0

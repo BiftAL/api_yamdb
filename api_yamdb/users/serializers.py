@@ -16,7 +16,7 @@ class UserSignUpSerializer(serializers.ModelSerializer):
     )
 
     def validate_username(self, value):
-        if value == 'me':
+        if value.lower() == 'me':
             raise serializers.ValidationError(
                 'Имя пользователя не должно быть "me".'
             )
@@ -40,7 +40,7 @@ class UserAdminCreateSerializer(serializers.ModelSerializer):
     role = serializers.CharField(required=False,)
 
     def validate_username(self, value):
-        if value == 'me':
+        if value.lower() == 'me':
             raise serializers.ValidationError(
                 'Имя пользователя не должно быть "me".'
             )

@@ -116,7 +116,9 @@ class GetUserInfoView(APIView):
                 serializer.validated_data,
                 status=status.HTTP_200_OK
             )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            serializer.errors, status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 class GetAPIToken(APIView):
@@ -124,13 +126,7 @@ class GetAPIToken(APIView):
         serializer = TokenSerializer(data=request.data)
         if serializer.is_valid():
             fields = serializer.validated_data
-            try:
-                user = User.objects.get(username=fields['username'])
-            except User.DoesNotExist:
-                return Response(
-                    {'Несуществующий юзер'},
-                    status=status.HTTP_404_NOT_FOUND
-                )
+            user = get_object_or_404(User, username=fields['username'])
             if fields['confirmation_code'] == user.confirmation_code:
                 token = AccessToken.for_user(user)
                 return Response(

@@ -1,17 +1,15 @@
 from django.urls import include, path, re_path
+
 from rest_framework import routers
 
-from .views import (CreateUserView, GetAPIToken,
-                    GetUserInfoView, UserRUDView, UsersViewSet)
+from users.views import GetUserInfoView, UserRUDView, UsersViewSet
 
 router = routers.DefaultRouter()
 router.register(r'users', UsersViewSet, basename='users')
 
-
 urlpatterns = [
     path('v1/', include('titles.urls')),
-    path('v1/auth/signup/', CreateUserView.as_view(), name='signup'),
-    path('v1/auth/token/', GetAPIToken.as_view(), name='token'),
+    path('v1/auth/', include('users.urls')),
     path('v1/users/me/', GetUserInfoView.as_view(), name='me'),
     re_path(
         r'^v1/users/(?P<username>[\w.@+-]+)/$',

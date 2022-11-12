@@ -1,3 +1,4 @@
+from datetime import date
 from django.db.models import Avg
 from rest_framework import serializers
 
@@ -31,6 +32,11 @@ class TitleSerializer(serializers.ModelSerializer):
         many=True, slug_field='slug',
         queryset=models.Genre.objects
     )
+
+    def validate_year(self, value):
+        if value < date.today().year:
+            return value
+        raise serializers.ValidationError('Проверьте год!')
 
     class Meta:
         fields = (

@@ -17,6 +17,7 @@ from .serializers import (TokenSerializer, UserAdminCreateSerializer,
 
 
 class UserRUDView(APIView):
+    """Вью для операций с пользователем. (получение, обновление, удаление)"""
     permission_classes = [IsAuthenticatedAdmin]
 
     def get(self, request, username):
@@ -51,6 +52,7 @@ class UserRUDView(APIView):
 
 
 class UsersViewSet(viewsets.ModelViewSet):
+    """Вью для создания пользователей администратором."""
     queryset = User.objects.all()
     permission_classes = (IsAuthenticatedAdmin,)
     serializer_class = UserAdminCreateSerializer
@@ -64,6 +66,7 @@ class UsersViewSet(viewsets.ModelViewSet):
 
 
 class CreateUserView(APIView):
+    """Вью для самостоятельной регистрации пользователя."""
     def post(self, request):
         serializer = UserSignUpSerializer(data=request.data)
         if serializer.is_valid():
@@ -89,6 +92,7 @@ class CreateUserView(APIView):
 
 
 class GetUserInfoView(APIView):
+    """Вью для самостоятельного получения и обновления инфы пользователя."""
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
@@ -101,13 +105,12 @@ class GetUserInfoView(APIView):
 
     def patch(self, request):
         user = User.objects.get(id=request.user.pk)
-        if request.user.role != 'admin':
-            self.request.POST._mutable = True
-            self.request.data['role'] = request.user.role
-            self.request.POST._mutable = False
+        new_query_dict = self.request.data.copy()
+        if not request.user.is_admin and not request.user.is_superuser:
+            new_query_dict['role'] = request.user.role
         serializer = UserFieldsSerializer(
             user,
-            data=request.data,
+            data=new_query_dict,
             partial=True
         )
         if serializer.is_valid():
@@ -122,6 +125,7 @@ class GetUserInfoView(APIView):
 
 
 class GetAPIToken(APIView):
+    """Вью для получения токена."""
     def post(self, request):
         serializer = TokenSerializer(data=request.data)
         if serializer.is_valid():

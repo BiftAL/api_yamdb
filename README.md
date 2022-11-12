@@ -27,6 +27,8 @@ python -m venv venv
 source venv/Scripts/activate
 ```
 
+Завести в корне проекта файл .env с SECRET_KEY Django-проекта
+
 ```
 python -m pip install --upgrade pip
 ```

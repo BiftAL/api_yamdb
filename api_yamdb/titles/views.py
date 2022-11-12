@@ -7,10 +7,15 @@ from . import models, serializers
 from .filters import TitleFilter
 
 
-class CategoryViewSet(mixins.CreateModelMixin,
+class BaseViewSet(mixins.CreateModelMixin,
                       mixins.ListModelMixin,
                       mixins.DestroyModelMixin,
                       viewsets.GenericViewSet):
+    """Вьюсет с нужными миксинами для наследования."""
+    pass
+
+
+class CategoryViewSet(BaseViewSet):
     """Вьюсет категорий."""
 
     queryset = models.Category.objects.all()
@@ -23,10 +28,7 @@ class CategoryViewSet(mixins.CreateModelMixin,
     lookup_field = 'slug'
 
 
-class GenreViewSet(mixins.CreateModelMixin,
-                   mixins.ListModelMixin,
-                   mixins.DestroyModelMixin,
-                   viewsets.GenericViewSet):
+class GenreViewSet(BaseViewSet):
     """Вьюсет жанров."""
 
     queryset = models.Genre.objects.all()

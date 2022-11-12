@@ -2,8 +2,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import filters, pagination, viewsets, mixins
 
+from api.permissions import IsAdminOrReadOnly
 from . import models, serializers
-from .permissions import IsAdminOrReadOnly
 from .filters import TitleFilter
 
 

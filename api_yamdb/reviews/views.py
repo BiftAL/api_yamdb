@@ -1,10 +1,11 @@
-from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
 
-from .serializers import ReviewSerializer, CommentSerializer
-from .permissions import IsAuthorOrHiAccessOrReadOnly
-from .models import Review, Comment
+from rest_framework import viewsets
+
+from api.permissions import IsAuthorOrHiAccessOrReadOnly
 from titles.models import Title
+from .models import Comment, Review
+from .serializers import CommentSerializer, ReviewSerializer
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

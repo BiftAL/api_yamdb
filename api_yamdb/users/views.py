@@ -2,16 +2,18 @@ import random
 
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+
 from rest_framework import permissions, status, viewsets
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework.pagination import PageNumberPagination
 
+from api_yamdb.settings import EMAIL_HOST_USER
+from api.permissions import IsAuthenticatedAdmin
 from users.models import User
-from .permissions import IsAuthenticatedAdmin
-from .serializers import (TokenSerializer, UserFieldsSerializer,
-                          UserSignUpSerializer, UserAdminCreateSerializer)
+from .serializers import (TokenSerializer, UserAdminCreateSerializer,
+                          UserFieldsSerializer, UserSignUpSerializer)
 
 
 class UserRUDView(APIView):
@@ -72,7 +74,7 @@ class CreateUserView(APIView):
             send_mail(
                 'YAMDB API confirmation code',
                 str(code),
-                'fromAPI@yamdb.com',
+                EMAIL_HOST_USER,
                 [user.email],
                 fail_silently=False,
             )
@@ -114,7 +116,9 @@ class GetUserInfoView(APIView):
                 serializer.validated_data,
                 status=status.HTTP_200_OK
             )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            serializer.errors, status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 class GetAPIToken(APIView):
@@ -122,13 +126,7 @@ class GetAPIToken(APIView):
         serializer = TokenSerializer(data=request.data)
         if serializer.is_valid():
             fields = serializer.validated_data
-            try:
-                user = User.objects.get(username=fields['username'])
-            except User.DoesNotExist:
-                return Response(
-                    {'Несуществующий юзер'},
-                    status=status.HTTP_404_NOT_FOUND
-                )
+            user = get_object_or_404(User, username=fields['username'])
             if fields['confirmation_code'] == user.confirmation_code:
                 token = AccessToken.for_user(user)
                 return Response(

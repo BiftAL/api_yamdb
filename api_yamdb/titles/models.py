@@ -90,3 +90,11 @@ class GenreTitle(models.Model):
     """Связующая жанры с произведениями модель."""
     title = models.ForeignKey(Title, on_delete=models.CASCADE, null=True)
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return f'{self.title} - {self.genre}'
+
+    class Meta:
+        verbose_name = 'Жанр - Произведение'
+        verbose_name_plural = 'Жанры - Произведения'
+        ordering = ['-id']

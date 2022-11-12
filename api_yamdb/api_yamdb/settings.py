@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'reviews.apps.ReviewsConfig',
     'users',
     'django_filters',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -110,6 +111,7 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)
 # e-mail emulatiom settings
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
+EMAIL_HOST_USER = 'fromAPI@yamdb.com'
 
 AUTH_USER_MODEL = 'users.User'
 

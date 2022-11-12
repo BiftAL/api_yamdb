@@ -7,10 +7,12 @@ from .filters import TitleFilter
 from api.permissions import IsAdminOrReadOnly
 
 
-class BaseViewSet(mixins.CreateModelMixin,
-                      mixins.ListModelMixin,
-                      mixins.DestroyModelMixin,
-                      viewsets.GenericViewSet):
+class BaseViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet
+):
     """Вьюсет с нужными миксинами для наследования."""
     pass
 

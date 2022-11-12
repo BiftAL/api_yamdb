@@ -17,7 +17,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         if Review.objects.filter(
                 author=validate_data.get('author'),
                 title=validate_data.get('title')
-        ):
+        ).exists():
             raise serializers.ValidationError(
                 'Вы уже оставляли отзыв на это произведение!'
             )

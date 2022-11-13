@@ -56,35 +56,32 @@ class UsersViewSet(viewsets.ModelViewSet):
     """Вью для создания пользователей администратором."""
     queryset = User.objects.all()
     serializer_class = UserAdminCreateSerializer
-    # permission_classes = (IsAuthenticatedAdmin,)
+    permission_classes = (permissions.IsAuthenticated, IsAuthenticatedAdmin)
     pagination_class = PageNumberPagination
-    
+
+    def has_permission(self, request, view):
+        return self.get_permissions()
+
     def get_current_path(self, request):
         return {
             'current_path': request.get_full_path()
         }
 
     def get_permissions(self):
-        if (self.request.method in ["GET", "PATCH"]
-            and self.get_current_path(self.request) == '/api/v1/users/me/'):
+        if self.get_current_path(self.request) == '/api/v1/users/me/':
             return (permissions.IsAuthenticated(),)
         return (IsAuthenticatedAdmin(),)
 
-    def perform_create(self, serializer):
-        if self.request.data.get('role') is None:
-            serializer.save(role="user")
-        else:
-            serializer.save()
-
     @action(
         detail=False,
-        methods=['get', 'patch',],
-        # permission_classes = (permissions.IsAuthenticated,),
+        methods=['GET', 'PATCH'],
+        permission_classes=(permissions.IsAuthenticated,),
         url_path='me'
     )
     def me(self, request):
-        print(request.path)
+        # print(request.path)
         user = User.objects.get(id=request.user.pk)
+        # print(self.get_current_path(self, request))
         if request.method == 'GET':
             serializer = UserFieldsSerializer(user)
             return Response(

@@ -51,9 +51,12 @@ class UserRUDView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
+'''
+Мы переместили обработку страницы /users/me/ в UsersViewSet,
+но так и не смогли побороть пермишены, вроде переопределяем их для 
+метода action, но все равно применяются общеклассовые.
 
 class UsersViewSet(viewsets.ModelViewSet):
-    """Вью для создания пользователей администратором."""
     queryset = User.objects.all()
     serializer_class = UserAdminCreateSerializer
     permission_classes = (permissions.IsAuthenticated, IsAuthenticatedAdmin)
@@ -106,6 +109,48 @@ class UsersViewSet(viewsets.ModelViewSet):
             return Response(
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )
+'''
+
+
+class UsersViewSet(viewsets.ModelViewSet):
+    """Вью для создания пользователей администратором."""
+    queryset = User.objects.all()
+    permission_classes = (IsAuthenticatedAdmin,)
+    serializer_class = UserAdminCreateSerializer
+    pagination_class = PageNumberPagination
+
+
+class GetUserInfoView(APIView):
+    """Вью для самостоятельного получения и обновления инфы пользователя."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = User.objects.get(id=request.user.pk)
+        serializer = UserFieldsSerializer(user)
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )
+
+    def patch(self, request):
+        user = User.objects.get(id=request.user.pk)
+        new_query_dict = self.request.data.copy()
+        if not request.user.is_admin and not request.user.is_superuser:
+            new_query_dict['role'] = request.user.role
+        serializer = UserFieldsSerializer(
+            user,
+            data=new_query_dict,
+            partial=True
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                serializer.validated_data,
+                status=status.HTTP_200_OK
+            )
+        return Response(
+            serializer.errors, status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 class CreateUserView(APIView):

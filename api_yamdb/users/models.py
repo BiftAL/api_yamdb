@@ -1,10 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+USER = 'user'
+MODERATOR = 'moderator'
+ADMIN = 'admin'
+
 ROLE_CHOICES = (
-    ('user', 'Аутентифицированный'),
-    ('moderator', 'Модератор'),
-    ('admin', 'Администратор'),
+    (USER, 'Аутентифицированный'),
+    (MODERATOR, 'Модератор'),
+    (ADMIN, 'Администратор'),
 )
 
 
@@ -13,11 +17,12 @@ class User(AbstractUser):
         'Биография',
         blank=True,
     )
-    role = models.TextField(
+    role = models.CharField(
         'Роль',
         blank=True,
-        max_length=16,
+        max_length=20,
         choices=ROLE_CHOICES,
+        default=USER,
     )
     confirmation_code = models.IntegerField(
         'Код подтверждения',
@@ -29,8 +34,8 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        return self.role == ROLE_CHOICES[2][0]
+        return self.role == ADMIN
 
     @property
     def is_moderator(self):
-        return self.role == ROLE_CHOICES[1][0]
+        return self.role == MODERATOR

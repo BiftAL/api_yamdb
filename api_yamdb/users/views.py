@@ -3,7 +3,7 @@ import random
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions, status, viewsets
-# from rest_framework.decorators import action
+from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -19,7 +19,7 @@ from api.permissions import IsAuthenticatedAdmin
 
 class UsersViewSet(viewsets.ModelViewSet):
     """Вью для создания пользователей администратором."""
-    
+
     queryset = User.objects.all()
     serializer_class = UserAdminCreateSerializer
     permission_classes = (permissions.IsAuthenticated, IsAuthenticatedAdmin)
@@ -58,7 +58,7 @@ class UsersViewSet(viewsets.ModelViewSet):
             return Response(
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )
-          
+
     def retrieve(self, request, username=None):
         queryset = User.objects.all()
         user = get_object_or_404(queryset, username=username)

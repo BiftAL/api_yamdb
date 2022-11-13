@@ -4,6 +4,7 @@ from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 
 from rest_framework import permissions, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -54,15 +55,60 @@ class UserRUDView(APIView):
 class UsersViewSet(viewsets.ModelViewSet):
     """Вью для создания пользователей администратором."""
     queryset = User.objects.all()
-    permission_classes = (IsAuthenticatedAdmin,)
     serializer_class = UserAdminCreateSerializer
+    # permission_classes = (IsAuthenticatedAdmin,)
     pagination_class = PageNumberPagination
+    
+    def get_current_path(self, request):
+        return {
+            'current_path': request.get_full_path()
+        }
+
+    def get_permissions(self):
+        if (self.request.method in ["GET", "PATCH"]
+            and self.get_current_path(self.request) == '/api/v1/users/me/'):
+            return (permissions.IsAuthenticated(),)
+        return (IsAuthenticatedAdmin(),)
 
     def perform_create(self, serializer):
         if self.request.data.get('role') is None:
             serializer.save(role="user")
         else:
             serializer.save()
+
+    @action(
+        detail=False,
+        methods=['get', 'patch',],
+        # permission_classes = (permissions.IsAuthenticated,),
+        url_path='me'
+    )
+    def me(self, request):
+        print(request.path)
+        user = User.objects.get(id=request.user.pk)
+        if request.method == 'GET':
+            serializer = UserFieldsSerializer(user)
+            return Response(
+                serializer.data,
+                status=status.HTTP_200_OK
+            )
+        elif request.method == 'PATCH':
+            new_query_dict = self.request.data.copy()
+            if not request.user.is_admin and not request.user.is_superuser:
+                new_query_dict['role'] = request.user.role
+            serializer = UserFieldsSerializer(
+                user,
+                data=new_query_dict,
+                partial=True
+            )
+            if serializer.is_valid():
+                serializer.save()
+                return Response(
+                    serializer.validated_data,
+                    status=status.HTTP_200_OK
+                )
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class CreateUserView(APIView):
@@ -88,39 +134,6 @@ class CreateUserView(APIView):
         return Response(
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
-        )
-
-
-class GetUserInfoView(APIView):
-    """Вью для самостоятельного получения и обновления инфы пользователя."""
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request):
-        user = User.objects.get(id=request.user.pk)
-        serializer = UserFieldsSerializer(user)
-        return Response(
-            serializer.data,
-            status=status.HTTP_200_OK
-        )
-
-    def patch(self, request):
-        user = User.objects.get(id=request.user.pk)
-        new_query_dict = self.request.data.copy()
-        if not request.user.is_admin and not request.user.is_superuser:
-            new_query_dict['role'] = request.user.role
-        serializer = UserFieldsSerializer(
-            user,
-            data=new_query_dict,
-            partial=True
-        )
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                serializer.validated_data,
-                status=status.HTTP_200_OK
-            )
-        return Response(
-            serializer.errors, status=status.HTTP_400_BAD_REQUEST
         )
 
 

@@ -10,7 +10,7 @@ Python 3.7, Django 3.2, DRF, JWT + Djoser
 Клонировать репозиторий и перейти в него в командной строке:
 
 ```
-https://github.com/ika11ika/api_yamdb.git
+https://github.com/BiftAL/api_yamdb.git
 ```
 
 ```

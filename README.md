@@ -50,7 +50,7 @@ cd api_yamdb/
 
 Переименовать и отредактировать в корне проекта файл env.example в .env
 ```
-mv api_yamdb/env.example api_yamdb/.env
+mv env.example api_yamdb/.env
 nano api_yamdb/.env
 ```
 
